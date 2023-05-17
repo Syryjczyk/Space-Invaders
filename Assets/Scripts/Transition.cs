@@ -5,6 +5,7 @@ public class Transition : MonoBehaviour
 {
     [SerializeField] private SceneDataSO sceneData;
     [SerializeField] private Intro[] introInvaders;
+    [SerializeField] private AudioSource audioSource;
     [SerializeField] private float timeRate;
 
     private int invaderAmount;
@@ -29,6 +30,7 @@ public class Transition : MonoBehaviour
 
     public void GoToPreLevelScene()
     {
+        audioSource.Play();
         SceneManager.LoadScene(SceneOrder.SceneOrderType.PRELEVEL.ToString());
     }
 }
