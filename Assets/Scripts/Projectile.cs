@@ -7,13 +7,13 @@ public class Projectile : MonoBehaviour
     [SerializeField] private Vector3 direction;
     [SerializeField] private float speed;
 
-    private BoxCollider2D boxCollider;
+    private BoxCollider2D _boxCollider;
 
     public Action<Projectile> Destroyed;
 
     private void Awake()
     {
-        boxCollider = GetComponent<BoxCollider2D>();
+        _boxCollider = GetComponent<BoxCollider2D>();
     }
 
     private void Update()
@@ -43,7 +43,7 @@ public class Projectile : MonoBehaviour
     {
         Bunker bunker = collision.gameObject.GetComponent<Bunker>();
 
-        if (bunker == null || bunker.CheckCollision(boxCollider, transform.position))
+        if (bunker == null || bunker.CheckCollision(_boxCollider, transform.position))
         {
             Destroy(gameObject);
         }

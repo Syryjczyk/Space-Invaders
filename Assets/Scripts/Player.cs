@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,43 +9,54 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform playerObject;
     [SerializeField] private Projectile laser;
     [SerializeField] private float movementSpeed;
+    [SerializeField] private Sprite[] cannonSprites;
     [Header("Sounds")]
     [SerializeField] private AudioSource playerShootSFX;
     [SerializeField] private AudioSource explosionSFX;
 
-    private GameControls gameControls;
-    private Bounds screenBounds;
-    private Vector2 direction;
-    private bool readyToShoot = true;
+    private GameControls _gameControls;
+    private SpriteRenderer _cannonSprite;
+    private Bounds _screenBounds;
+    private Vector2 _direction;
+    private bool _readyToShoot = true;
 
     public Action<Transform> Killed;
+    public Action<Transform> Smoke;
 
     private void Awake()
     {
-        gameControls = new GameControls();
+        _gameControls = new GameControls();
     }
 
     private void OnEnable()
     {
-        gameControls.PlayerActions.Enable();
-        gameControls.PlayerActions.Movement.performed += MoveAction;
-        gameControls.PlayerActions.Shooting.performed += ShootLaser;
+        _gameControls.PlayerActions.Enable();
+        _gameControls.PlayerActions.Movement.performed += MoveAction;
+        _gameControls.PlayerActions.Shooting.performed += ShootLaser;
+    }
+
+    private void OnDisable()
+    {
+        _gameControls.PlayerActions.Movement.performed -= MoveAction;
+        _gameControls.PlayerActions.Shooting.performed -= ShootLaser;
+        _gameControls.PlayerActions.Disable();
     }
 
     private void Start()
     {
+        _cannonSprite = GetComponent<SpriteRenderer>();
         float cameraDistance = Vector3.Distance(transform.position, Camera.main.transform.position);
         Vector3 bottomLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, cameraDistance));
         Vector3 topRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, cameraDistance));
-        screenBounds = new Bounds((topRight + bottomLeft) / 2, topRight - bottomLeft);
+        _screenBounds = new Bounds((topRight + bottomLeft) / 2, topRight - bottomLeft);
     }
 
     private void Update()
     {
-        playerObject.Translate(direction.x * movementSpeed * Time.deltaTime, 0f, 0f);
+        playerObject.Translate(_direction.x * movementSpeed * Time.deltaTime, 0f, 0f);
 
         Vector3 clampedPosition = playerObject.position;
-        clampedPosition.x = Mathf.Clamp(clampedPosition.x, screenBounds.min.x + 0.12f, screenBounds.max.x - 0.12f);
+        clampedPosition.x = Mathf.Clamp(clampedPosition.x, _screenBounds.min.x + 0.12f, _screenBounds.max.x - 0.12f);
         playerObject.position = clampedPosition;
     }
 
@@ -62,22 +75,38 @@ public class Player : MonoBehaviour
 
     private void ShootLaser(InputAction.CallbackContext context)
     {
-        if (readyToShoot)
+        if (_readyToShoot)
         {
+            if (Smoke != null)
+            {
+                Smoke.Invoke(transform);
+            }
+
+            StartCoroutine(nameof(ShootAnimation));
+            VibrationHandler.MediumVibration();
             Projectile projectile = Instantiate(laser, transform.position, Quaternion.identity);
             projectile.Destroyed += ShootReadyCheck;
-            readyToShoot = false;
+            _readyToShoot = false;
             playerShootSFX.Play();
         }
     }
 
     private void MoveAction(InputAction.CallbackContext context)
     {
-        direction = context.ReadValue<Vector2>();
+        _direction = context.ReadValue<Vector2>();
     }
 
     private void ShootReadyCheck(Projectile laser)
     {
-        readyToShoot = true;
+        _readyToShoot = true;
+    }
+
+    private IEnumerator ShootAnimation()
+    {
+        _cannonSprite.sprite = cannonSprites[1];
+
+        yield return new WaitForSeconds(0.25f);
+
+        _cannonSprite.sprite = cannonSprites[0];
     }
 }

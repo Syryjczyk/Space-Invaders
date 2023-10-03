@@ -7,20 +7,20 @@ public class Invader : MonoBehaviour
     [SerializeField] private float animationTime;
     [SerializeField] private int score;
 
-    private SpriteRenderer spriteRenderer;
-    private int animationFrame;
+    private SpriteRenderer _spriteRenderer;
+    private int _animationFrame;
 
     public Action<Invader> Killed;
     public int Score => score;
 
     private void OnEnable()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
     {
-        animationFrame = 0;
+        _animationFrame = 0;
         InvokeRepeating(nameof(AnimateInvader), animationTime, animationTime);
     }
 
@@ -34,13 +34,13 @@ public class Invader : MonoBehaviour
 
     private void AnimateInvader()
     {
-        animationFrame++;
+        _animationFrame++;
 
-        if (animationFrame >= animationSprites.Length)
+        if (_animationFrame >= animationSprites.Length)
         {
-            animationFrame = 0;
+            _animationFrame = 0;
         }
 
-        spriteRenderer.sprite = animationSprites[animationFrame];
+        _spriteRenderer.sprite = animationSprites[_animationFrame];
     }
 }

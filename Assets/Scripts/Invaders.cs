@@ -8,6 +8,7 @@ public class Invaders : MonoBehaviour
     [SerializeField] private float padding;
     [SerializeField] private float downDistance;
     [SerializeField] private float shootRate;
+    [SerializeField] private float bulletAngle;
     [SerializeField] private AnimationCurve speed;
     [SerializeField] private Projectile missile;
     [SerializeField] private Invader[] invadersRowRepresentation;
@@ -15,20 +16,24 @@ public class Invaders : MonoBehaviour
     [SerializeField] private AudioSource invaderShootSFX;
     [SerializeField] private AudioSource explosionSFX;
 
-    private Vector3 direction = Vector3.right;
-    private Vector3 initialPosition;
-    private int killedAmount;
-    private int totalAmount => rows * columns;
-    private int aliveAmount => totalAmount - killedAmount;
-    private float percentedKilled => (float)killedAmount / (float)totalAmount;
+    private Vector3 _direction = Vector3.right;
+    private Vector3 _bulletAxis = Vector3.forward;
+    private Vector3 _initialPosition;
+    private int _killedAmount;
+    private GameObject _bottomBorder;
+    private int _totalAmount => rows * columns;
+    private int _aliveAmount => _totalAmount - _killedAmount;
+    private float _percentedKilled => (float)_killedAmount / (float)_totalAmount;
 
     public System.Action<Invader> Killed;
-    public int KilledAmount => killedAmount;
-    public int TotalAmount => totalAmount;
+    public System.Action<Invader> Smoke;
+    public System.Action<Transform> BrakeThrough;
+    public int KilledAmount => _killedAmount;
+    public int TotalAmount => _totalAmount;
 
     private void OnEnable()
     {
-        initialPosition = transform.position;
+        _initialPosition = transform.position;
 
         for (int row = 0; row < rows; row++)
         {
@@ -51,11 +56,16 @@ public class Invaders : MonoBehaviour
     private void Start()
     {
         InvokeRepeating(nameof(ShootMissile), shootRate, shootRate);
+        _bottomBorder = GameObject.Find("BottomBorder");
     }
 
     private void Update()
     {
-        transform.position += direction * speed.Evaluate(percentedKilled) * Time.deltaTime;
+        if (transform.position.y <= _bottomBorder.transform.position.y + 0.5f)
+        {
+            BrakeThrough?.Invoke(_bottomBorder.transform);
+        }
+        transform.position += _direction * speed.Evaluate(_percentedKilled) * Time.deltaTime;
 
         foreach (Transform invader in transform)
         {
@@ -67,11 +77,11 @@ public class Invaders : MonoBehaviour
             Vector3 rightEdge = Camera.main.ViewportToWorldPoint(Vector3.right);
             Vector3 leftEdge = Camera.main.ViewportToWorldPoint(Vector3.zero);
 
-            if (direction == Vector3.right && invader.position.x > (rightEdge.x - padding))
+            if (_direction == Vector3.right && invader.position.x > (rightEdge.x - padding))
             {
                 AdvanceRow();
             }
-            else if (direction == Vector3.left && invader.position.x < (leftEdge.x + padding))
+            else if (_direction == Vector3.left && invader.position.x < (leftEdge.x + padding))
             {
                 AdvanceRow();
             }
@@ -80,7 +90,7 @@ public class Invaders : MonoBehaviour
 
     private void AdvanceRow()
     {
-        direction.x *= -1.0f;
+        _direction.x *= -1.0f;
         Vector3 position = transform.position;
         position.y -= downDistance;
         transform.position = position;
@@ -90,7 +100,7 @@ public class Invaders : MonoBehaviour
     {
         explosionSFX.Play();
         invader.gameObject.SetActive(false);
-        killedAmount++;
+        _killedAmount++;
         Killed(invader);
     }
 
@@ -103,9 +113,9 @@ public class Invaders : MonoBehaviour
                 continue;
             }
 
-            if (Random.value < (1.0f / aliveAmount))
+            if (Random.value < (1.0f / _aliveAmount))
             {
-                Instantiate(missile, invader.transform.position, Quaternion.identity);
+                Instantiate(missile, invader.transform.position, Quaternion.AngleAxis(bulletAngle, _bulletAxis));
                 invaderShootSFX.Play();
                 break;
             }
@@ -123,7 +133,7 @@ public class Invaders : MonoBehaviour
         //    invader.gameObject.SetActive(true);
         //}
 
-        direction = Vector3.right;
-        transform.position = initialPosition;
+        _direction = Vector3.right;
+        transform.position = _initialPosition;
     }
 }

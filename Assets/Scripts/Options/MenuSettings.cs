@@ -22,10 +22,12 @@ public class MenuSettings : MonoBehaviour
         if (isActive)
         {
             vibrationActive.text = "on";
+            VibrationHandler.SetVibrationEnabled(true);
         }
         else
         {
             vibrationActive.text = "off";
+            VibrationHandler.SetVibrationEnabled(false);
         }
     }
 }

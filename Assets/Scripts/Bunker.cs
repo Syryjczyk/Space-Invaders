@@ -11,14 +11,14 @@ public class Bunker : MonoBehaviour
     [SerializeField] private AudioSource explosionSFX;
 
 
-    private SpriteRenderer spriteRenderer;
-    private BoxCollider2D boxCollider;
+    private SpriteRenderer _spriteRenderer;
+    private BoxCollider2D _boxCollider;
 
     private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        boxCollider = GetComponent<BoxCollider2D>();
-        orginal = spriteRenderer.sprite.texture;
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _boxCollider = GetComponent<BoxCollider2D>();
+        orginal = _spriteRenderer.sprite.texture;
 
         ResetBunker();
     }
@@ -38,21 +38,21 @@ public class Bunker : MonoBehaviour
         copy.SetPixels(source.GetPixels());
         copy.Apply();
 
-        Sprite sprite = Sprite.Create(copy, spriteRenderer.sprite.rect, new Vector2(padding, padding), spriteRenderer.sprite.pixelsPerUnit);
-        spriteRenderer.sprite = sprite;
+        Sprite sprite = Sprite.Create(copy, _spriteRenderer.sprite.rect, new Vector2(padding, padding), _spriteRenderer.sprite.pixelsPerUnit);
+        _spriteRenderer.sprite = sprite;
     }
 
     private bool CheckPoint(Vector3 hitPoint, out int px, out int py)
     {
         Vector3 localPoint = transform.InverseTransformPoint(hitPoint);
 
-        localPoint.x += boxCollider.size.x / 2;
-        localPoint.y += boxCollider.size.y / 2;
+        localPoint.x += _boxCollider.size.x / 2;
+        localPoint.y += _boxCollider.size.y / 2;
 
-        Texture2D texture = spriteRenderer.sprite.texture;
+        Texture2D texture = _spriteRenderer.sprite.texture;
 
-        px = (int)((localPoint.x / boxCollider.size.x) * texture.width);
-        py = (int)((localPoint.y / boxCollider.size.y) * texture.height);
+        px = (int)((localPoint.x / _boxCollider.size.x) * texture.width);
+        py = (int)((localPoint.y / _boxCollider.size.y) * texture.height);
 
         return texture.GetPixel(px, py).a != 0f;
     }
@@ -67,7 +67,7 @@ public class Bunker : MonoBehaviour
             return false;
         }
 
-        Texture2D texture = spriteRenderer.sprite.texture;
+        Texture2D texture = _spriteRenderer.sprite.texture;
 
         px -= splat.width / 2;
         py -= splat.height / 2;

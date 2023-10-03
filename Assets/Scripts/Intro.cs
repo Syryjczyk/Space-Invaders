@@ -9,11 +9,11 @@ public class Intro : MonoBehaviour
     [SerializeField] private float xPosition;
     [SerializeField] private float yPosition;
 
-    private SpriteRenderer spriteRenderer;
+    private SpriteRenderer _spriteRenderer;
  
     private void OnEnable()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
@@ -45,6 +45,6 @@ public class Intro : MonoBehaviour
         float g = Random.Range(0f, 1f);
         float b = Random.Range(0f, 1f);
 
-        spriteRenderer.color = new Color(r, g, b);
+        _spriteRenderer.color = new Color(r, g, b);
     }
 }

@@ -23,26 +23,34 @@ public class Preparation : MonoBehaviour
 
     private void Initialization()
     {
+        if (PlayerPrefs.GetInt("Best Score").Equals(null))
+        {
+            PlayerPrefs.SetInt("Best Score", 0);
+        }
+
         if (sceneData.Level == (int)(SceneOrder.SceneOrderType.PRELEVEL))
         {
             tryAgainButton.gameObject.SetActive(false);
             nextLevelText.text = "Start";
-            nextLevelButton.anchoredPosition = new Vector2(0, -100);
             levelText.text = $"level {sceneData.Level}";
         }
+
+        else if (sceneData.Level == 7)
+        {
+            levelText.text = $"Level {sceneData.Level - 1} complited";
+            tryAgainButton.gameObject.SetActive(false);
+            nextLevelText.text = "Continue";
+        }
+
         else if (sceneData.NextLevelAchived)
         {
             levelText.text = $"Level {sceneData.Level - 1} complited";
         }
+
         else if (!sceneData.NextLevelAchived)
         {
             levelText.text = $"Level {sceneData.Level - 1} failed";
             nextLevelButton.gameObject.SetActive(false);
-            tryAgainButton.anchoredPosition = new Vector2(0, -100);
-        }
-        else if (sceneData.Level == 7)
-        {
-
         }
     }
 

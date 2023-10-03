@@ -7,40 +7,40 @@ public class GameOptions : MonoBehaviour
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Toggle vibrationToggle;
 
-    private float soundVolume;
-    private float musicVolume;
-    private bool vibrationEnabled;
+    private float _soundVolume;
+    private float _musicVolume;
+    private bool _vibrationEnabled;
 
     private void Start()
     {
-        soundVolume = PlayerPrefs.GetFloat("SoundVolume", 1.0f);
-        musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1.0f);
-        vibrationEnabled = PlayerPrefs.GetInt("VibrationEnabled", 1) == 1;
+        _soundVolume = PlayerPrefs.GetFloat("SoundVolume", 1.0f);
+        _musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1.0f);
+        _vibrationEnabled = PlayerPrefs.GetInt("VibrationEnabled", 1) == 1;
 
-        soundSlider.value = soundVolume;
-        musicSlider.value = musicVolume;
-        vibrationToggle.isOn = vibrationEnabled;
+        soundSlider.value = _soundVolume;
+        musicSlider.value = _musicVolume;
+        vibrationToggle.isOn = _vibrationEnabled;
 
     }
 
     private void Update()
     {
-        if (soundVolume != soundSlider.value)
+        if (_soundVolume != soundSlider.value)
         {
-            soundVolume = soundSlider.value;
-            PlayerPrefs.SetFloat("SoundVolume", soundVolume);
+            _soundVolume = soundSlider.value;
+            PlayerPrefs.SetFloat("SoundVolume", _soundVolume);
         }
 
-        if (musicVolume != musicSlider.value)
+        if (_musicVolume != musicSlider.value)
         {
-            musicVolume = musicSlider.value;
-            PlayerPrefs.SetFloat("MusicVolume", musicVolume);
+            _musicVolume = musicSlider.value;
+            PlayerPrefs.SetFloat("MusicVolume", _musicVolume);
         }
 
-        if (vibrationEnabled != vibrationToggle.isOn)
+        if (_vibrationEnabled != vibrationToggle.isOn)
         {
-            vibrationEnabled = vibrationToggle.isOn;
-            PlayerPrefs.SetInt("VibrationEnabled", vibrationEnabled ? 1 : 0);
+            _vibrationEnabled = vibrationToggle.isOn;
+            PlayerPrefs.SetInt("VibrationEnabled", _vibrationEnabled ? 1 : 0);
         }
     }
 }

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fc87928afee60a4b820c6ff78a1a39a, type: 3}
   m_Name: SceneData
   m_EditorClassIdentifier: 
-  Level: 2
-  IsGameInitialize: 0
+  Level: 0
+  IsGameInitialize: 1
   NextLevelAchived: 0
